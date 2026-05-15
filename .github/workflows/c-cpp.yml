@@ -3,6 +3,12 @@ name: C/C++ CI
 on:
   push:
     branches: [ "master" ]
+  
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.head_ref || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
 
 jobs:
   build:
@@ -13,7 +19,7 @@ jobs:
     - name: Install cross-compilers
       run: |
         sudo apt-get update
-        sudo apt-get install -y gcc-arm-linux-gnueabihf
+        sudo apt-get install -y gcc-arm-linux-gnueabihf file
 
     - name: Build ARM32
       run: |
@@ -21,6 +27,22 @@ jobs:
 
     - name: Verify
       run: |
-        echo "=== Binary sizes ==="
+        echo "=== File info ==="
         file exp
+
+        echo "=== ELF info ==="
+        readelf -h exp || true
+
+        echo "=== Binary size ==="
         ls -lh exp
+
+    - name: Upload build directory as artifact
+      uses: actions/upload-artifact@v6
+      with:
+        name: output
+        path: |
+          exp
+        retention-days: 7
+        if-no-files-found: error
+        compression-level: 6
+        overwrite: true
