@@ -17,7 +17,7 @@ jobs:
 
     - name: Build ARM32
       run: |
-        arm-linux-gnueabihf-gcc -O0 -Wall -o exp-arm32 exp.c -lutil
+        arm-linux-gnueabihf-gcc -O0 -Wall -o exp exp.c -lutil
 
     - name: Verify
       run: |
