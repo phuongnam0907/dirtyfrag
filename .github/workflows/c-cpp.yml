@@ -1,0 +1,26 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Install cross-compilers
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc-arm-linux-gnueabihf
+
+    - name: Build ARM32
+      run: |
+        arm-linux-gnueabihf-gcc -O0 -Wall -o exp-arm32 exp.c -lutil
+
+    - name: Verify
+      run: |
+        echo "=== Binary sizes ==="
+        file exp
+        ls -lh exp
